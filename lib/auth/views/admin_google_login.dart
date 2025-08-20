@@ -6,6 +6,7 @@ import 'package:sems/shared/utils/snacbar_helper.dart';
 import 'package:sems/auth/utils/terms_privacy.dart';
 import '../../core/contants/assets.dart';
 import '../../router.dart';
+import '../../shared/widgets/refresh_dialog.dart';
 import '../providers/auth_state.dart';
 import '../providers/providers.dart';
 
@@ -143,27 +144,4 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
   void _handleSignIn(WidgetRef ref) {
     ref.read(authNotifierProvider.notifier).signInWithGoogle('Admin');
   }
-}
-
-void showLoadingDialog(BuildContext context, {String? message}) {
-  showDialog(
-    context: context,
-    barrierDismissible: false, // Prevent dismiss on outside touch
-    builder: (context) => WillPopScope(
-      onWillPop: () async => false, // Prevent back button dismiss
-      child: AlertDialog(
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const CircularProgressIndicator(),
-            if (message != null) ...[const SizedBox(height: 16), Text(message)],
-          ],
-        ),
-      ),
-    ),
-  );
-}
-
-void hideLoadingDialog(BuildContext context) {
-  Navigator.of(context, rootNavigator: true).pop();
 }

@@ -3,11 +3,14 @@ import 'package:go_router/go_router.dart';
 import 'package:sems/auth/views/admin_resgister.dart';
 import 'package:sems/auth/views/role_selection_signin.dart';
 import 'package:sems/features/home/home_screen.dart';
+import 'package:sems/features/notifications/notifications_screen.dart';
+import 'admin/views/bottom_dashboard.dart';
 import 'auth/views/admin_google_login.dart';
 import 'auth/views/student_login.dart';
 import 'features/onboarding/introduction_screen.dart';
 import 'features/onboarding/spash_screen.dart';
 import 'features/scanner/qr_scanner.dart';
+import 'features/student/views/active_students_list.dart';
 
 // Keep only the necessary routes
 enum AppRoute {
@@ -19,6 +22,8 @@ enum AppRoute {
   studentLogin('/studentLogin'),
   scanner('/scanner'),
   welcome('/welcome'),
+  notifications('/notifications'),
+  activeStudentsList('/active-students-list'),
   register('/register');
 
   const AppRoute(this.path);
@@ -49,11 +54,21 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoute.home.path,
-        builder: (context, state) => const HomeScreen(),
+        builder: (context, state) {
+          return const MyAppBottomBar();
+        },
       ),
       GoRoute(
         path: AppRoute.studentHome.path,
         builder: (context, state) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: AppRoute.notifications.path,
+        builder: (context, state) => const NotificationsScreen(),
+      ),
+      GoRoute(
+        path: AppRoute.activeStudentsList.path,
+        builder: (context, state) => const ActiveStudentsList(),
       ),
       GoRoute(
         path: AppRoute.register.path,

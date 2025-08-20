@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../features/student/db/student_db.dart';
 import '../../shared/utils/logger.dart';
-import '../../student/db/student_db.dart';
 import 'auth_state.dart';
 
 class StudentAuthNotifier extends StateNotifier<AuthState> {

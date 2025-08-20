@@ -1,4 +1,4 @@
-import '../../student/model/student_model.dart';
+import '../../features/student/model/student_model.dart';
 
 abstract class AuthState {}
 

@@ -2,10 +2,9 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:sems/student/model/student_model.dart';
 import 'package:sqflite/sqflite.dart';
-
-import '../../shared/utils/logger.dart';
+import '../../../shared/utils/logger.dart';
+import '../model/student_model.dart';
 
 class StudentDb {
   // Private constructor to prevent instantiation
@@ -57,7 +56,7 @@ class StudentDb {
           await db.execute('''
       CREATE TABLE IF NOT EXISTS $tableName (
         $acadmyIdCol TEXT,
-        $isActiveCol INTEGER, // Use INTEGER for boolean values in SQLite
+        $isActiveCol INTEGER,
         $studentIdCol TEXT PRIMARY KEY,
         $profileImageCol BLOB,
         $rollNumberCol TEXT,
@@ -77,11 +76,14 @@ class StudentDb {
         $optionalField1Col TEXT,
         $optionalField2Col TEXT,
         $optionalField3Col TEXT
-        // $attachmentsCol TEXT // You might want to store attachments separately
+        $attachmentsCol BLOB 
       )
     ''');
         },
       );
+
+      // $isActiveCol INTEGER, // Use INTEGER for boolean values in SQLite
+      // // $attachmentsCol TEXT // You might want to store attachments separately
 
       return db;
     } catch (e) {

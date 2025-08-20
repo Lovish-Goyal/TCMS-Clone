@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sems/auth/providers/auth_notifier.dart';
-import '../../student/db/student_db.dart';
+import '../../features/student/db/student_db.dart';
 import 'auth_state.dart';
 import 'student_auth.dart';
 

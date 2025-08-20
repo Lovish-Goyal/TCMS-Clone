@@ -104,6 +104,10 @@ class RoleSelectionScreen extends StatelessWidget {
         context.push(AppRoute.studentLogin.path);
         debugPrint('Student selected');
         break;
+      case 'teachers':
+        context.push(AppRoute.studentLogin.path);
+        debugPrint('Teacher selected');
+        break;
     }
   }
 }

@@ -1,6 +1,7 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+
 import 'dart:typed_data';
 import 'package:sems/auth/views/role_selection_signin.dart';
-
 import '../views/attachment_model.dart';
 
 class Student {

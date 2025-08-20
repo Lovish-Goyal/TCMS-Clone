@@ -50,6 +50,12 @@ dependencies:
   google_sign_in: ^7.1.1
   lottie: ^3.3.1
   introduction_screen: ^3.1.17
+  share_plus: ^11.1.0
+  fl_chart: ^1.0.0
+  carousel_slider: ^5.1.1
+  file_picker: ^10.3.1
+  firebase_storage: ^13.0.0
+  flutter_native_contact_picker: ^0.0.10
 
 dev_dependencies:
   flutter_test:
