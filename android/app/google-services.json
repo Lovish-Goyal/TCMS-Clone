@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "189839201542-gjl8mfuotvu5ic1bhq1lkaar7vk9po0s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sems",
+            "certificate_hash": "222d3d92fc5b2bd39b3a439a4d57672ba020b195"
+          }
+        },
+        {
           "client_id": "189839201542-8d5pkvuu7ds2mmhl1tcd5u1gcp8ipq33.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -31,10 +39,10 @@
               "client_type": 3
             },
             {
-              "client_id": "189839201542-pb59kpo53o28bi57l0n9q9n3cu1sdsbu.apps.googleusercontent.com",
+              "client_id": "189839201542-ac7vv32if2g4sgk55m3642aurgkq3ih2.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.acadsys"
+                "bundle_id": "com.example.sems"
               }
             }
           ]
@@ -75,10 +83,10 @@
               "client_type": 3
             },
             {
-              "client_id": "189839201542-pb59kpo53o28bi57l0n9q9n3cu1sdsbu.apps.googleusercontent.com",
+              "client_id": "189839201542-ac7vv32if2g4sgk55m3642aurgkq3ih2.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.acadsys"
+                "bundle_id": "com.example.sems"
               }
             }
           ]
