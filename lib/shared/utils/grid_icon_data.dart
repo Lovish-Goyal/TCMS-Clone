@@ -11,7 +11,7 @@ final List<Map<String, dynamic>> iconData = [
   {
     'icon': Icons.monetization_on,
     'label': 'Tuition Fees',
-    'color': Colors.greenAccent,
+    'color': const Color.fromARGB(255, 16, 85, 52),
   },
   // {
   //   'icon': Icons.attach_money,

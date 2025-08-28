@@ -7,13 +7,11 @@ import '../../../shared/utils/logger.dart';
 import '../model/student_model.dart';
 
 class StudentDb {
-  // Private constructor to prevent instantiation
   StudentDb._();
 
   static final StudentDb dbInstance = StudentDb._();
   static const tableName = 'students';
 
-  // Column names for the students table
   static const acadmyIdCol = 'acadmyId';
   static const isActiveCol = 'isActive';
   static const studentIdCol = 'studentId';
@@ -35,12 +33,11 @@ class StudentDb {
   static const optionalField1Col = 'optionalField1';
   static const optionalField2Col = 'optionalField2';
   static const optionalField3Col = 'optionalField3';
-  static const attachmentsCol = 'attachments';
 
   Database? _database;
 
   Future<Database> getStudentDatabase() async {
-    _database ??= await _openDb(); // Efficiently open the database once
+    _database ??= await _openDb();
     return _database!;
   }
 
@@ -49,65 +46,56 @@ class StudentDb {
       final Directory appPath = await getApplicationDocumentsDirectory();
       final String dbPath = join(appPath.path, 'sems.db');
 
-      final Database db = await openDatabase(
+      return await openDatabase(
         dbPath,
         version: 1,
         onCreate: (db, version) async {
           await db.execute('''
-      CREATE TABLE IF NOT EXISTS $tableName (
-        $acadmyIdCol TEXT,
-        $isActiveCol INTEGER,
-        $studentIdCol TEXT PRIMARY KEY,
-        $profileImageCol BLOB,
-        $rollNumberCol TEXT,
-        $studentNameCol TEXT,
-        $guardianNameCol TEXT,
-        $dateOfBirthCol TEXT,
-        $mobileNumber1Col TEXT,
-        $mobileNumber2Col TEXT,
-        $genderCol TEXT,
-        $addressCol TEXT,
-        $batchNameCol TEXT,
-        $feeTypeCol TEXT,
-        $feeAmountCol TEXT,
-        $startDateCol TEXT,
-        $classOrSubjectCol TEXT,
-        $schoolNameCol TEXT,
-        $optionalField1Col TEXT,
-        $optionalField2Col TEXT,
-        $optionalField3Col TEXT
-        $attachmentsCol BLOB 
-      )
-    ''');
+          CREATE TABLE IF NOT EXISTS $tableName (
+            $acadmyIdCol TEXT,
+            $isActiveCol INTEGER,
+            $studentIdCol TEXT PRIMARY KEY,
+            $profileImageCol BLOB,
+            $rollNumberCol TEXT,
+            $studentNameCol TEXT,
+            $guardianNameCol TEXT,
+            $dateOfBirthCol TEXT,
+            $mobileNumber1Col TEXT,
+            $mobileNumber2Col TEXT,
+            $genderCol TEXT,
+            $addressCol TEXT,
+            $batchNameCol TEXT,
+            $feeTypeCol TEXT,
+            $feeAmountCol TEXT,
+            $startDateCol TEXT,
+            $classOrSubjectCol TEXT,
+            $schoolNameCol TEXT,
+            $optionalField1Col TEXT,
+            $optionalField2Col TEXT,
+            $optionalField3Col TEXT
+          )
+        ''');
         },
       );
-
-      // $isActiveCol INTEGER, // Use INTEGER for boolean values in SQLite
-      // // $attachmentsCol TEXT // You might want to store attachments separately
-
-      return db;
     } catch (e) {
       logger.e(e.toString());
       rethrow;
     }
   }
 
-  // Add a new student to the database
   Future<int> addStudent(Student student) async {
-    final Database db = await getStudentDatabase();
+    final db = await getStudentDatabase();
     return await db.insert(tableName, student.toMap());
   }
 
-  // Get all students from the database
   Future<List<Student>> getStudents() async {
-    final Database db = await getStudentDatabase();
+    final db = await getStudentDatabase();
     final List<Map<String, dynamic>> rawStudents = await db.query(tableName);
     return rawStudents.map((e) => Student.fromMap(e)).toList();
   }
 
-  // Delete a student from the database
   Future<int> deleteStudent(String studentId) async {
-    final Database db = await getStudentDatabase();
+    final db = await getStudentDatabase();
     return await db.delete(
       tableName,
       where: '$studentIdCol = ?',
@@ -120,8 +108,7 @@ class StudentDb {
     required String studentId,
     required String dateOfBirth,
   }) async {
-    // 1. Check if student exists locally:
-    final Database db = await getStudentDatabase();
+    final db = await getStudentDatabase();
     final localStudent = await _verifyStudentLocally(
       db,
       academyId,
@@ -130,33 +117,29 @@ class StudentDb {
     );
 
     if (localStudent != null) {
-      return localStudent; // Found locally
-    } else {
-      // 2. Student not found locally, query Firestore:
-      try {
-        final studentDoc = await FirebaseFirestore.instance
-            .collection('students')
-            .doc(studentId)
-            .get();
-
-        if (studentDoc.exists) {
-          final studentData = studentDoc.data() as Map<String, dynamic>;
-          if (studentData['academyId'] == academyId &&
-              studentData['dateOfBirth'] == dateOfBirth) {
-            // Validated against Firestore
-            final newStudent = Student.fromMap(studentData);
-            await addStudent(
-              newStudent,
-            ); // Add to local DB for faster future logins
-            return newStudent;
-          }
-        }
-      } catch (e) {
-        logger.e('Firestore login verification error: $e');
-      }
+      return localStudent;
     }
 
-    return null; // No matching student found
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('students')
+          .doc(studentId)
+          .get();
+
+      if (doc.exists) {
+        final data = doc.data()!;
+        if (data['academyId'] == academyId &&
+            data['dateOfBirth'] == dateOfBirth) {
+          final newStudent = Student.fromMap(data);
+          await addStudent(newStudent);
+          return newStudent;
+        }
+      }
+    } catch (e) {
+      logger.e('Firestore login error: $e');
+    }
+
+    return null;
   }
 
   Future<Student?> _verifyStudentLocally(
@@ -169,12 +152,7 @@ class StudentDb {
       final List<Map<String, dynamic>> result = await db.query(
         tableName,
         where:
-            '''
-          $acadmyIdCol = ? AND 
-          $studentIdCol = ? AND 
-          $dateOfBirthCol = ? AND 
-          $isActiveCol = ?
-        ''',
+            '$acadmyIdCol = ? AND $studentIdCol = ? AND $dateOfBirthCol = ? AND $isActiveCol = ?',
         whereArgs: [academyId, studentId, dateOfBirth, 1],
         limit: 1,
       );
@@ -184,7 +162,7 @@ class StudentDb {
       }
       return null;
     } catch (e) {
-      logger.e('Login verification error: $e');
+      logger.e('Local login error: $e');
       return null;
     }
   }

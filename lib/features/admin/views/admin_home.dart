@@ -1,15 +1,15 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sems/router.dart';
+import 'package:sems/shared/utils/grid_icon_data.dart';
 import 'package:sems/shared/utils/snacbar_helper.dart';
-import 'package:sems/admin/utils/admin_drawer.dart';
 import 'package:flutter/material.dart';
+import 'package:sems/shared/widgets/bottom_cards.dart';
+import 'package:sems/shared/widgets/header_crousel.dart' show CustomCarousel;
+import 'package:sems/shared/widgets/my_app_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../router.dart';
-import '../../shared/utils/grid_icon_data.dart';
-import '../../shared/widgets/bottom_cards.dart';
-import '../../shared/widgets/grid_button_widget.dart';
-import '../../shared/widgets/header_crousel.dart';
-import '../../shared/widgets/my_app_bar.dart';
+import '../../../shared/widgets/grid_button_widget.dart';
+import '../utils/admin_drawer.dart';
 import '../utils/financial_chart_widget.dart';
 
 class AdminHome extends StatelessWidget {

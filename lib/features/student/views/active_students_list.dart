@@ -17,65 +17,65 @@ class _ActiveStudentsListState extends ConsumerState<ActiveStudentsList> {
   String selectedBatchName = 'All';
 
   @override
-  void initState() {
-    super.initState();
-    // Initial fetch handled by notifier's constructor
-  }
-
-  @override
   Widget build(BuildContext context) {
     final studentState = ref.watch(studentNotifierProvider);
 
     return SafeArea(
       child: Scaffold(
-        // appBar: MyCustomAppBar(
-        //   title: 'Students',
-        //   onSearch: (query) {
-        //     ref.read(studentNotifierProvider.notifier).search(query);
-        //   },
-        //   actions: [
-        //     IconButton(
-        //       onPressed: () {},
-        //       icon: const Icon(Icons.info, color: Colors.white),
-        //     ),
-        //     IconButton(
-        //       onPressed: () {},
-        //       icon: const Icon(Icons.send, color: Colors.white),
-        //     ),
-        //     IconButton(
-        //       onPressed: () {},
-        //       icon: const Icon(Icons.more_vert, color: Colors.white),
-        //     ),
-        //   ],
-        // ),
+        appBar: AppBar(
+          foregroundColor: Colors.white,
+          title: const Text('Students'),
+        ),
         body: Column(
           children: [
-            // BatchSelector(
-            //   initialValue: selectedBatchName,
-            //   onBatchSelected: (value) {
-            //     setState(() => selectedBatchName = value!);
-            //     ref.read(studentNotifierProvider.notifier).filterByBatch(value);
-            //   },
-            // ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: DropdownButton<String>(
+                value: selectedBatchName,
+                items: <String>['All', 'Batch A', 'Batch B']
+                    .map(
+                      (batch) => DropdownMenuItem<String>(
+                        value: batch,
+                        child: Text(batch),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() => selectedBatchName = value);
+                    ref
+                        .read(studentNotifierProvider.notifier)
+                        .filterByBatch(value);
+                  }
+                },
+              ),
+            ),
+
             Expanded(
               child: studentState.isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : studentState.error != null
                   ? Center(child: Text(studentState.error!))
+                  : studentState.students.isEmpty
+                  ? const Center(child: Text('No students found.'))
                   : ListView.builder(
                       itemCount: studentState.students.length,
                       itemBuilder: (context, index) {
                         final student = studentState.students[index];
                         return Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 5),
-                          padding: const EdgeInsets.all(5),
-                          decoration: const BoxDecoration(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 5,
+                          ),
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
                             color: Colors.white,
-                            boxShadow: [
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: const [
                               BoxShadow(
                                 color: Colors.black12,
-                                blurRadius: 5,
-                                spreadRadius: 2,
+                                blurRadius: 4,
+                                spreadRadius: 1,
                               ),
                             ],
                           ),
@@ -92,17 +92,17 @@ class _ActiveStudentsListState extends ConsumerState<ActiveStudentsList> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => AddStudentPage()),
+              MaterialPageRoute(builder: (context) => const AddStudentPage()),
             );
           },
-          child: const Icon(Icons.send, color: Colors.white),
+          child: const Icon(Icons.add, color: Colors.white),
         ),
       ),
     );
   }
 }
 
-// Define state
+// Student State
 class StudentState {
   final List<Student> students;
   final bool isLoading;
@@ -123,7 +123,7 @@ class StudentState {
   }
 }
 
-// Notifier
+// Student Notifier
 class StudentNotifier extends StateNotifier<StudentState> {
   final StudentDb studentDb;
 
@@ -144,25 +144,38 @@ class StudentNotifier extends StateNotifier<StudentState> {
     }
   }
 
-  void search(String name) async {
+  Future<void> search(String name) async {
     state = state.copyWith(isLoading: true);
-    final list = await studentDb.getStudents();
-    final filtered = list.where((s) => s.studentName.contains(name)).toList();
-    state = state.copyWith(students: filtered, isLoading: false);
+    try {
+      final allStudents = await studentDb.getStudents();
+      final filtered = allStudents
+          .where(
+            (s) =>
+                s.studentName.toLowerCase().contains(name.toLowerCase().trim()),
+          )
+          .toList();
+      state = state.copyWith(students: filtered, isLoading: false);
+    } catch (e) {
+      state = state.copyWith(error: 'Search failed', isLoading: false);
+    }
   }
 
-  void filterByBatch(String batch) async {
+  Future<void> filterByBatch(String batch) async {
     state = state.copyWith(isLoading: true);
-    final list = await studentDb.getStudents();
-    final filtered = (batch == 'All')
-        ? list
-        : list.where((s) => s.batchName == batch).toList();
-    state = state.copyWith(students: filtered, isLoading: false);
+    try {
+      final allStudents = await studentDb.getStudents();
+      final filtered = batch == 'All'
+          ? allStudents
+          : allStudents.where((s) => s.batchName == batch).toList();
+      state = state.copyWith(students: filtered, isLoading: false);
+    } catch (e) {
+      state = state.copyWith(error: 'Filtering failed', isLoading: false);
+    }
   }
 }
 
 // Provider
 final studentNotifierProvider =
-    StateNotifierProvider<StudentNotifier, StudentState>((ref) {
-      return StudentNotifier(StudentDb.dbInstance);
-    });
+    StateNotifierProvider<StudentNotifier, StudentState>(
+      (ref) => StudentNotifier(StudentDb.dbInstance),
+    );

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/contants/assets.dart' show Assets;
+import '../../../core/contants/assets.dart' show Assets;
 
 class HeaderSection extends StatelessWidget {
   const HeaderSection({super.key});

@@ -13,28 +13,32 @@ class AuthAuthenticated extends AuthState {
 }
 
 class AuthRequiresRegistration extends AuthState {
-  final String uid;
-  final String email;
+  final String id;
+  final String academyId;
+  final String academyName;
   final String name;
-
-  final String? academyName;
-  final String? academyId;
-  final String? phoneNumber;
-  final String? address;
-  late final dynamic photoUrl;
-
+  final String email;
+  final String phoneNumber;
+  final String address;
   final String role;
+  final DateTime? trialStartDate;
+  final DateTime? trialEndDate;
+  final bool isPremium;
+  final String? photoUrl;
 
   AuthRequiresRegistration({
-    required this.uid,
-    required this.email,
+    required this.id,
+    required this.academyId,
+    required this.academyName,
     required this.name,
-    this.academyName,
-    this.academyId,
-    this.phoneNumber,
-    this.address,
-    this.photoUrl,
+    required this.email,
+    required this.phoneNumber,
+    required this.address,
     required this.role,
+    this.trialStartDate,
+    this.trialEndDate,
+    this.isPremium = false,
+    this.photoUrl,
   });
 }
 

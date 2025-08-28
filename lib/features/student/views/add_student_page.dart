@@ -1,19 +1,21 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_native_contact_picker/flutter_native_contact_picker.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../shared/utils/converter_class.dart';
 import '../../../shared/utils/custom_textfield.dart';
 import '../../../shared/utils/date_picker.dart';
 import '../../../shared/utils/image_picker.dart';
 import '../../../shared/utils/show_dailog_box.dart';
-import '../../../shared/utils/snacbar_helper.dart';
 import '../db/student_db.dart';
 import '../model/student_model.dart';
-import 'attachment_model.dart';
+import '../model/attachment_model.dart';
 
 class AddStudentPage extends StatefulWidget {
   const AddStudentPage({super.key});
@@ -23,61 +25,54 @@ class AddStudentPage extends StatefulWidget {
 }
 
 class _AddStudentPageState extends State<AddStudentPage> {
-  late final TextEditingController studentIdController;
-  late final TextEditingController rollNumberController;
-  late final TextEditingController studentNameController;
-  late final TextEditingController parentsNameController;
-  late final TextEditingController dateOfBirthController;
-  late final TextEditingController addressController;
-  late final TextEditingController mobileNumberController;
-  late final TextEditingController mobileNumber2Controller;
-  late final TextEditingController feesAmountController;
-  late final TextEditingController startDateController;
-  late final TextEditingController classController;
-  late final TextEditingController schoolController;
-  late final TextEditingController field1Controller;
-  late final TextEditingController field2Controller;
-  late final TextEditingController field3Controller;
-  late final TextEditingController attachmentController;
-
-  String selectBatch = 'Select Batch Name';
-  String feeType = '';
-  String? _selectedGender = "Male";
-
-  int studentIdRange = 0;
-  File? selectedFile;
-  File? attachmentFile;
-  List<AttachmentsModel> attachmentList = [];
-
-  final picker = ImagePicker();
   final _formKey = GlobalKey<FormState>();
+  final picker = ImagePicker();
   final FlutterNativeContactPicker _contactPicker =
       FlutterNativeContactPicker();
+
+  // Controllers
+  late final TextEditingController studentIdController =
+      TextEditingController();
+  late final TextEditingController rollNumberController =
+      TextEditingController();
+  late final TextEditingController studentNameController =
+      TextEditingController();
+  late final TextEditingController parentsNameController =
+      TextEditingController();
+  late final TextEditingController dateOfBirthController =
+      TextEditingController();
+  late final TextEditingController addressController = TextEditingController();
+  late final TextEditingController mobileNumberController =
+      TextEditingController();
+  late final TextEditingController mobileNumber2Controller =
+      TextEditingController();
+  late final TextEditingController feesAmountController =
+      TextEditingController();
+  late final TextEditingController startDateController =
+      TextEditingController();
+  late final TextEditingController classController = TextEditingController();
+  late final TextEditingController schoolController = TextEditingController();
+  late final TextEditingController field1Controller = TextEditingController();
+  late final TextEditingController field2Controller = TextEditingController();
+  late final TextEditingController field3Controller = TextEditingController();
+  late final TextEditingController attachmentController =
+      TextEditingController();
+
+  String selectedBatch = 'Select Batch Name';
+  String selectedFeeType = 'Monthly';
+  String? selectedGender = "Male";
+  int studentIdRange = 0;
+
+  File? selectedProfileImage;
+  List<AttachmentsModel> attachmentList = [];
+
+  final List<String> batchOptions = ['Select Batch Name', 'Batch A', 'Batch B'];
+  final List<String> feeTypes = ['Monthly', 'Quarterly', 'Annually'];
 
   @override
   void initState() {
     super.initState();
-    initializeControllers();
     _setNextStudentId();
-  }
-
-  void initializeControllers() {
-    studentIdController = TextEditingController();
-    rollNumberController = TextEditingController();
-    studentNameController = TextEditingController();
-    parentsNameController = TextEditingController();
-    dateOfBirthController = TextEditingController();
-    addressController = TextEditingController();
-    mobileNumberController = TextEditingController();
-    mobileNumber2Controller = TextEditingController();
-    feesAmountController = TextEditingController();
-    startDateController = TextEditingController();
-    classController = TextEditingController();
-    schoolController = TextEditingController();
-    field1Controller = TextEditingController();
-    field2Controller = TextEditingController();
-    field3Controller = TextEditingController();
-    attachmentController = TextEditingController();
   }
 
   Future<void> _setNextStudentId() async {
@@ -114,125 +109,107 @@ class _AddStudentPageState extends State<AddStudentPage> {
       child: Scaffold(
         appBar: AppBar(title: const Text("New Student")),
         body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  _buildProfileImagePicker(),
-                  CustomTextField(
-                    title: 'Student ID',
-                    controller: studentIdController,
-                    isNumeric: true,
-                  ),
-                  CustomTextField(
-                    title: 'Roll Number (Optional)',
-                    controller: rollNumberController,
-                    isNumeric: true,
-                    isRequired: false,
-                  ),
-                  CustomTextField(
-                    title: 'Student Name',
-                    controller: studentNameController,
-                  ),
-                  CustomTextField(
-                    title: 'Parents\'/ Guardian Name',
-                    controller: parentsNameController,
-                  ),
-                  CustomTextField(
-                    title: 'Date of Birth',
-                    controller: dateOfBirthController,
-                    isDisabled: true,
-                    onFieldTapped: () =>
-                        pickDate(context, dateOfBirthController),
-                  ),
-                  CustomTextField(
-                    title: 'Mobile Number',
-                    controller: mobileNumberController,
-                    isMobile: true,
-                    // onContactClicked: () =>
-                    //     _fetchContact(mobileNumberController),
-                  ),
-                  CustomTextField(
-                    title: 'Mobile Number (2)',
-                    controller: mobileNumber2Controller,
-                    isMobile: true,
-                    // onContactClicked: () {}
-                    //     _fetchContact(mobileNumber2Controller),
-                    isRequired: false,
-                  ),
-                  _buildGenderSelector(),
-                  CustomTextField(
-                    title: 'Address',
-                    controller: addressController,
-                  ),
-                  CustomTextField(
-                    title: 'Batch Name',
-                    controller: TextEditingController(text: selectBatch),
-                  ),
-                  CustomTextField(
-                    title: 'Fee Type',
-                    controller: TextEditingController(text: feeType),
-                  ),
-                  CustomTextField(
-                    title: 'Fees Amount',
-                    controller: feesAmountController,
-                    isNumeric: true,
-                  ),
-                  CustomTextField(
-                    title: 'Start Date',
-                    controller: startDateController,
-                    isDisabled: true,
-                    onFieldTapped: () => pickDate(context, startDateController),
-                  ),
-                  CustomTextField(
-                    title: 'Class/Subject',
-                    controller: classController,
-                  ),
-                  CustomTextField(
-                    title: 'School/College',
-                    controller: schoolController,
-                  ),
-                  CustomTextField(
-                    title: 'Field 1 (Optional)',
-                    controller: field1Controller,
-                    isRequired: false,
-                  ),
-                  CustomTextField(
-                    title: 'Field 2 (Optional)',
-                    controller: field2Controller,
-                    isRequired: false,
-                  ),
-                  CustomTextField(
-                    title: 'Field 3 (Optional)',
-                    controller: field3Controller,
-                    isRequired: false,
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () =>
-                        dialogBuilder(context, _addAttachmentsDialog(context)),
-                    child: const Text("Add Attachment"),
-                  ),
-                  const SizedBox(height: 10),
-                  ListView.builder(
-                    itemCount: attachmentList.length,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        leading: Image.memory(
-                          attachmentList[index].imageBytes,
-                          width: 30,
-                        ),
-                        title: Text(attachmentList[index].name),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  _buildActionButtons(context),
-                ],
-              ),
+          padding: const EdgeInsets.all(12),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                _buildProfileImagePicker(),
+                CustomTextField(
+                  title: 'Student ID',
+                  controller: studentIdController,
+                  isNumeric: true,
+                ),
+                CustomTextField(
+                  title: 'Roll Number (Optional)',
+                  controller: rollNumberController,
+                  isNumeric: true,
+                  isRequired: false,
+                ),
+                CustomTextField(
+                  title: 'Student Name',
+                  controller: studentNameController,
+                ),
+                CustomTextField(
+                  title: 'Parents\'/ Guardian Name',
+                  controller: parentsNameController,
+                ),
+                CustomTextField(
+                  title: 'Date of Birth',
+                  controller: dateOfBirthController,
+                  isDisabled: true,
+                  onFieldTapped: () => pickDate(context, dateOfBirthController),
+                ),
+                CustomTextField(
+                  title: 'Mobile Number',
+                  controller: mobileNumberController,
+                  isMobile: true,
+                ),
+                CustomTextField(
+                  title: 'Mobile Number (2)',
+                  controller: mobileNumber2Controller,
+                  isMobile: true,
+                  isRequired: false,
+                ),
+                _buildGenderSelector(),
+                CustomTextField(
+                  title: 'Address',
+                  controller: addressController,
+                ),
+                _buildDropdown('Batch Name', selectedBatch, batchOptions, (
+                  value,
+                ) {
+                  setState(() => selectedBatch = value!);
+                }),
+                _buildDropdown('Fee Type', selectedFeeType, feeTypes, (value) {
+                  setState(() => selectedFeeType = value!);
+                }),
+                CustomTextField(
+                  title: 'Fees Amount',
+                  controller: feesAmountController,
+                  isNumeric: true,
+                ),
+                CustomTextField(
+                  title: 'Start Date',
+                  controller: startDateController,
+                  isDisabled: true,
+                  onFieldTapped: () => pickDate(context, startDateController),
+                ),
+                CustomTextField(
+                  title: 'Class/Subject',
+                  controller: classController,
+                ),
+                CustomTextField(
+                  title: 'School/College',
+                  controller: schoolController,
+                ),
+                CustomTextField(
+                  title: 'Field 1 (Optional)',
+                  controller: field1Controller,
+                  isRequired: false,
+                ),
+                CustomTextField(
+                  title: 'Field 2 (Optional)',
+                  controller: field2Controller,
+                  isRequired: false,
+                ),
+                CustomTextField(
+                  title: 'Field 3 (Optional)',
+                  controller: field3Controller,
+                  isRequired: false,
+                ),
+
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () =>
+                      dialogBuilder(context, _addAttachmentsDialog(context)),
+                  child: const Text("Add Attachment"),
+                ),
+                const SizedBox(height: 10),
+                _buildAttachmentList(),
+                const SizedBox(height: 20),
+                _buildActionButtons(context),
+              ],
             ),
           ),
         ),
@@ -250,10 +227,10 @@ class _AddStudentPageState extends State<AddStudentPage> {
             shape: BoxShape.circle,
             border: Border.all(color: Colors.blue, width: 2),
           ),
-          child: selectedFile != null
+          child: selectedProfileImage != null
               ? CircleAvatar(
                   radius: 55,
-                  backgroundImage: FileImage(selectedFile!),
+                  backgroundImage: FileImage(selectedProfileImage!),
                 )
               : const Icon(Icons.camera_alt, size: 110, color: Colors.blue),
         ),
@@ -261,22 +238,63 @@ class _AddStudentPageState extends State<AddStudentPage> {
     );
   }
 
-  Row _buildGenderSelector() {
-    final genders = ['Male', 'Female', 'Others'];
+  Widget _buildGenderSelector() {
+    const genders = ['Male', 'Female', 'Others'];
     return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
       children: genders.map((gender) {
         return Row(
           children: [
             Radio<String>(
               value: gender,
-              groupValue: _selectedGender,
-              onChanged: (value) => setState(() => _selectedGender = value),
+              groupValue: selectedGender,
+              onChanged: (value) => setState(() => selectedGender = value),
             ),
             Text(gender),
             const SizedBox(width: 10),
           ],
         );
       }).toList(),
+    );
+  }
+
+  Widget _buildDropdown(
+    String label,
+    String value,
+    List<String> options,
+    ValueChanged<String?> onChanged,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: DropdownButtonFormField<String>(
+        value: value,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(),
+        ),
+        items: options
+            .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+            .toList(),
+        onChanged: onChanged,
+        validator: (value) => (value == null || value == options.first)
+            ? 'Please select $label'
+            : null,
+      ),
+    );
+  }
+
+  Widget _buildAttachmentList() {
+    return ListView.builder(
+      itemCount: attachmentList.length,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemBuilder: (context, index) {
+        final attachment = attachmentList[index];
+        return ListTile(
+          leading: Image.memory(attachment.imageBytes, width: 30),
+          title: Text(attachment.name),
+        );
+      },
     );
   }
 
@@ -300,15 +318,10 @@ class _AddStudentPageState extends State<AddStudentPage> {
 
   void _onSavePressed() async {
     if (_formKey.currentState!.validate()) {
-      // if (selectBatch == 'Select Batch Name') {
-      //   SnackbarHelper.showErrorSnackBar(context, "Please Select Batch Name");
-      //   return;
-      // }
-
       final student = Student(
         studentId: studentIdController.text,
-        profileImageBytes: selectedFile != null
-            ? await imageToBytes(selectedFile!.path)
+        profileImageBytes: selectedProfileImage != null
+            ? await imageToBytes(selectedProfileImage!.path)
             : null,
         rollNumber: rollNumberController.text,
         studentName: studentNameController.text,
@@ -316,11 +329,10 @@ class _AddStudentPageState extends State<AddStudentPage> {
         dateOfBirth: dateOfBirthController.text,
         mobileNumber1: mobileNumberController.text,
         mobileNumber2: mobileNumber2Controller.text,
-        gender: _selectedGender ?? 'Male',
+        gender: selectedGender ?? 'Male',
         address: addressController.text,
-        batchName: selectBatch,
-        feeType: feeType,
-        // feeAmount: feesAmountController.text,
+        batchName: selectedBatch,
+        feeType: selectedFeeType,
         startDate: startDateController.text,
         classOrSubject: classController.text,
         schoolName: schoolController.text,
@@ -333,6 +345,34 @@ class _AddStudentPageState extends State<AddStudentPage> {
       );
 
       await StudentDb.dbInstance.addStudent(student);
+      try {
+        await FirebaseFirestore.instance
+            .collection('students')
+            .doc(studentIdController.text) // or auto ID: .doc()
+            .set(student.toMap());
+
+        // Optionally save attachments separately or with student doc
+        // for (final attachment in attachmentList) {
+        //   await FirebaseFirestore.instance
+        //       .collection('students')
+        //       .doc(studentIdController.text)
+        //       .collection('attachments')
+        //       .add({
+        //         'name': attachment.name,
+        //         'imageBytes': base64Encode(attachment.imageBytes),
+        //       });
+        // }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Student saved successfully!')),
+        );
+
+        context.pop();
+      } catch (e) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to save student: $e')));
+      }
       context.pop();
     }
   }
@@ -376,29 +416,22 @@ class _AddStudentPageState extends State<AddStudentPage> {
     final XFile? image = await picker.pickImage(source: source);
     if (image != null) {
       final file = File(image.path);
-      final bytes = await imageToBytes(image.path);
+      final bytes = await imageToBytes(file.path);
 
       setState(() {
         if (isAttachment) {
-          final attachment = AttachmentsModel(
-            name: attachmentController.text,
-            studentId: studentIdController.text,
-            imageBytes: bytes,
+          attachmentList.add(
+            AttachmentsModel(
+              name: attachmentController.text,
+              studentId: studentIdController.text,
+              imageBytes: bytes,
+            ),
           );
-          attachmentList.add(attachment);
           attachmentController.clear();
         } else {
-          selectedFile = file;
+          selectedProfileImage = file;
         }
       });
-    }
-  }
-
-  void _fetchContact(TextEditingController controller) async {
-    final contact = await _contactPicker.selectContact();
-    if (contact != null) {
-      controller.text =
-          contact.phoneNumbers?.first.replaceAll(RegExp(r'[\s+]'), '') ?? '';
     }
   }
 }

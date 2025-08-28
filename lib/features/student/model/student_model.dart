@@ -2,7 +2,6 @@
 
 import 'dart:typed_data';
 import 'package:sems/auth/views/role_selection_signin.dart';
-import '../views/attachment_model.dart';
 
 class Student {
   final String uid;
@@ -29,7 +28,7 @@ class Student {
   final String optionalField3;
   final bool isActive;
 
-  final List<AttachmentsModel>? attachments;
+  // final List<AttachmentsModel>? attachments;
   Student({
     this.profileImageBytes,
     required this.acadmyId,
@@ -51,7 +50,7 @@ class Student {
     required this.optionalField2,
     required this.optionalField3,
     required this.uid,
-    this.attachments,
+    // this.attachments,
     required this.isActive,
     this.role = UserRole.student,
   });
@@ -79,7 +78,7 @@ class Student {
     String? optionalField2,
     String? optionalField3,
     bool? isActive,
-    List<AttachmentsModel>? attachments,
+    // List<AttachmentsModel>? attachments,
   }) {
     return Student(
       uid: uid ?? this.uid,
@@ -103,7 +102,7 @@ class Student {
       optionalField1: optionalField1 ?? this.optionalField1,
       optionalField2: optionalField2 ?? this.optionalField2,
       optionalField3: optionalField3 ?? this.optionalField3,
-      attachments: attachments ?? this.attachments,
+      // attachments: attachments ?? this.attachments,
       isActive: isActive.toString() == 'true' ? true : false,
     );
   }
@@ -128,7 +127,7 @@ class Student {
       'optionalField1': optionalField1,
       'optionalField2': optionalField2,
       'optionalField3': optionalField3,
-      'attachments': attachments,
+      // 'attachments': attachments,
       'isActive': isActive.toString(),
       'profileImage': profileImageBytes,
     };
@@ -179,7 +178,7 @@ class Student {
       optionalField1: map['optionalField1']?.toString() ?? '',
       optionalField2: map['optionalField2']?.toString() ?? '',
       optionalField3: map['optionalField3']?.toString() ?? '',
-      attachments: map['attachments'] as List<AttachmentsModel>?,
+      // attachments: map['attachments'] as List<AttachmentsModel>?,
       isActive: map['isActive'] == 'true' ? true : false,
     );
   }

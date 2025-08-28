@@ -33,12 +33,12 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
       }
 
       if (state is AuthAuthenticated) {
-        context.go(AppRoute.home.path);
+        context.go(AppRoute.teacherHome.path);
       } else if (state is AuthRequiresRegistration) {
         context.push(
           AppRoute.register.path,
           extra: {
-            'uid': state.uid,
+            'uid': state.id,
             'email': state.email,
             'name': state.name,
             'role': state.role,

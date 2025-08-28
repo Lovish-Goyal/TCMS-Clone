@@ -54,18 +54,21 @@ class AuthNotifier extends StateNotifier<AuthState> {
           return;
         }
 
-        final userDocRef = _firestore.collection('users').doc(user.uid);
+        final userDocRef = _firestore.collection('teachers').doc(user.uid);
         final userData = await userDocRef.get();
 
         if (!userData.exists) {
           logger.i('New user detected - requiring registration');
           state = AuthRequiresRegistration(
-            uid: user.uid,
+            id: user.uid,
             email: user.email ?? '',
             name: user.displayName ?? '',
             phoneNumber: user.phoneNumber ?? '',
             photoUrl: user.photoURL ?? '',
             role: role,
+            academyId: '',
+            academyName: '',
+            address: '',
           );
         } else {
           state = AuthAuthenticated(userData.data()!);
@@ -83,8 +86,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
   ) async {
     try {
       logger.i('Starting registration completion for user: $uid');
-      await _firestore.collection('users').doc(uid).set(userData);
-      final updatedDoc = await _firestore.collection('users').doc(uid).get();
+      await _firestore.collection('teachers').doc(uid).set(userData);
+      final updatedDoc = await _firestore.collection('teachers').doc(uid).get();
       state = AuthAuthenticated(updatedDoc.data()!);
     } catch (e) {
       logger.e('Error during registration completion', error: e);
@@ -108,7 +111,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final user = _auth.currentUser;
       if (user != null) {
         final userData = await _firestore
-            .collection('users')
+            .collection('teachers')
             .doc(user.uid)
             .get();
         if (userData.exists) {
