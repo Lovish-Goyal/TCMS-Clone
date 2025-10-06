@@ -26,7 +26,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('💦App Loaded.');
+    debugPrint('App Loaded.');
 
     return Scaffold(
       body: Stack(

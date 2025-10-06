@@ -8,12 +8,12 @@ import '../providers/auth_state.dart';
 import '../providers/providers.dart';
 import 'role_selection_signin.dart';
 
-class RegisterScreen extends ConsumerStatefulWidget {
+class AdminRegisterScreen extends ConsumerStatefulWidget {
   final String uid;
   final String email;
   final String name;
 
-  const RegisterScreen({
+  const AdminRegisterScreen({
     super.key,
     required this.uid,
     required this.email,
@@ -21,10 +21,11 @@ class RegisterScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
+  ConsumerState<AdminRegisterScreen> createState() =>
+      _AdminRegisterScreenState();
 }
 
-class _RegisterScreenState extends ConsumerState<RegisterScreen> {
+class _AdminRegisterScreenState extends ConsumerState<AdminRegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();

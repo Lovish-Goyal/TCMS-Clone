@@ -167,7 +167,7 @@ class RoleSelectionScreen extends StatelessWidget {
   void _onRoleSelected(BuildContext context, String role) {
     switch (role) {
       case 'Admin':
-        // context.push(AppRoute.AdminLogin.path);
+        context.push(AppRoute.adminLogin.path);
         debugPrint('Admin selected');
         break;
       case 'Student':

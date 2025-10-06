@@ -37,7 +37,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
         // If user cancelled login
         if (googleUser == null) {
-          return null;
+          return;
         }
 
         final googleAuth = await googleUser.authentication;
@@ -54,7 +54,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
           return;
         }
 
-        final userDocRef = _firestore.collection('teachers').doc(user.uid);
+        final userDocRef = _firestore.collection('admin').doc(user.uid);
         final userData = await userDocRef.get();
 
         if (!userData.exists) {
@@ -86,8 +86,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
   ) async {
     try {
       logger.i('Starting registration completion for user: $uid');
-      await _firestore.collection('teachers').doc(uid).set(userData);
-      final updatedDoc = await _firestore.collection('teachers').doc(uid).get();
+      await _firestore.collection('admin').doc(uid).set(userData);
+      final updatedDoc = await _firestore.collection('admin').doc(uid).get();
       state = AuthAuthenticated(updatedDoc.data()!);
     } catch (e) {
       logger.e('Error during registration completion', error: e);
@@ -111,7 +111,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final user = _auth.currentUser;
       if (user != null) {
         final userData = await _firestore
-            .collection('teachers')
+            .collection('admin')
             .doc(user.uid)
             .get();
         if (userData.exists) {

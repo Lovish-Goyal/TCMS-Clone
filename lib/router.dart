@@ -23,6 +23,7 @@ enum AppRoute {
   roleSelection('/role-selection'),
   studentHome('/student-home'),
   studentLogin('/studentLogin'),
+  adminLogin('/adminlogin'),
   scanner('/scanner'),
   welcome('/welcome'),
   notifications('/notifications'),
@@ -57,9 +58,13 @@ class AppRouter {
         builder: (context, state) => const MyIntroductionScreen(),
       ),
       GoRoute(
-        path: AppRoute.teacherLogin.path,
-        builder: (context, state) => const LoginScreen(),
+        path: AppRoute.adminLogin.path,
+        builder: (context, state) => const AdminLoginScreen(),
       ),
+      // GoRoute(
+      //   path: AppRoute.teacherLogin.path,
+      //   builder: (context, state) => const Teacher(),
+      // ),
       GoRoute(
         path: AppRoute.teacherHome.path,
         builder: (context, state) => TeacherBottomBar(),
@@ -98,7 +103,7 @@ class AppRouter {
         path: AppRoute.register.path,
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>;
-          return RegisterScreen(
+          return AdminRegisterScreen(
             uid: extra['uid'],
             email: extra['email'],
             name: extra['name'],

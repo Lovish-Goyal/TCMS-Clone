@@ -10,14 +10,14 @@ import '../../shared/widgets/refresh_dialog.dart';
 import '../providers/auth_state.dart';
 import '../providers/providers.dart';
 
-class LoginScreen extends ConsumerStatefulWidget {
-  const LoginScreen({super.key});
+class AdminLoginScreen extends ConsumerStatefulWidget {
+  const AdminLoginScreen({super.key});
 
   @override
-  ConsumerState<LoginScreen> createState() => LoginScreenState();
+  ConsumerState<AdminLoginScreen> createState() => AdminLoginScreenState();
 }
 
-class LoginScreenState extends ConsumerState<LoginScreen> {
+class AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
   bool _isLoadingDialogShown = false;
 
   @override

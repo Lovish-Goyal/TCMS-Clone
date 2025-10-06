@@ -28,27 +28,35 @@ class _ActiveStudentsListState extends ConsumerState<ActiveStudentsList> {
         ),
         body: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: DropdownButton<String>(
-                value: selectedBatchName,
-                items: <String>['All', 'Batch A', 'Batch B']
-                    .map(
-                      (batch) => DropdownMenuItem<String>(
-                        value: batch,
-                        child: Text(batch),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (value) {
-                  if (value != null) {
-                    setState(() => selectedBatchName = value);
-                    ref
-                        .read(studentNotifierProvider.notifier)
-                        .filterByBatch(value);
-                  }
-                },
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 16,
+                  ),
+                  child: DropdownButton<String>(
+                    value: selectedBatchName,
+                    items: <String>['All', 'Batch A', 'Batch B']
+                        .map(
+                          (batch) => DropdownMenuItem<String>(
+                            value: batch,
+                            child: Text(batch),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() => selectedBatchName = value);
+                        ref
+                            .read(studentNotifierProvider.notifier)
+                            .filterByBatch(value);
+                      }
+                    },
+                  ),
+                ),
+              ],
             ),
 
             Expanded(

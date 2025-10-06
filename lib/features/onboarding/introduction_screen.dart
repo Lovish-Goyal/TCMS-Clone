@@ -49,18 +49,18 @@ class MyIntroductionScreen extends StatelessWidget {
             imageFlex: 3,
           ),
         ),
-        PageViewModel(
-          title: "Advanced Features",
-          body: "Explore AI-powered assistance and QR code scanning.",
-          image: Lottie.network(
-            'https://lottie.host/cd1d120a-7245-4536-93b6-e7fa30dc00b3/AGs9ovbxEM.json',
-          ),
-          decoration: PageDecoration(
-            pageColor: Colors.purple.shade50,
-            bodyFlex: 2,
-            imageFlex: 3,
-          ),
-        ),
+        // PageViewModel(
+        //   title: "Advanced Features",
+        //   body: "Explore AI-powered assistance and QR code scanning.",
+        //   image: Lottie.network(
+        //     'https://lottie.host/cd1d120a-7245-4536-93b6-e7fa30dc00b3/AGs9ovbxEM.json',
+        //   ),
+        //   decoration: PageDecoration(
+        //     pageColor: Colors.purple.shade50,
+        //     bodyFlex: 2,
+        //     imageFlex: 3,
+        //   ),
+        // ),
       ],
       onDone: () => context.go(AppRoute.roleSelection.path),
       onSkip: () => context.go(AppRoute.roleSelection.path),
@@ -73,25 +73,26 @@ class MyIntroductionScreen extends StatelessWidget {
         child: Material(
           color: Theme.of(context).colorScheme.primary,
           child: const SizedBox(
-            width: 56,
-            height: 56,
+            width: 30,
+            height: 30,
             child: Icon(Icons.arrow_forward, color: Colors.white),
           ),
         ),
       ),
-      done: ClipOval(
-        child: Material(
-          color: Theme.of(context).colorScheme.primary, // Button color
-          child: InkWell(
-            onTap: () => context.go(AppRoute.roleSelection.path),
-            child: const SizedBox(
-              width: 56,
-              height: 56,
-              child: Icon(Icons.check, color: Colors.white),
-            ),
-          ),
-        ),
-      ),
+      done: Text("Done"),
+      // ClipOval(
+      //   child: Material(
+      //     color: Theme.of(context).colorScheme.primary, // Button color
+      //     child: InkWell(
+      //       onTap: () => context.go(AppRoute.roleSelection.path),
+      //       child: const SizedBox(
+      //         width: 30,
+      //         height: 30,
+      //         child: Icon(Icons.check, color: Colors.white),
+      //       ),
+      //     ),
+      //   ),
+      // ),
       showNextButton: true,
       curve: Curves.fastLinearToSlowEaseIn,
       dotsDecorator: DotsDecorator(
